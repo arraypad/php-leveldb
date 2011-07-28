@@ -147,9 +147,7 @@ zend_class_entry *php_leveldb_options_class_entry;
 #define PHP_LEVELDB_OPTIONS_CLASS_NAME "LevelDbOptions"
 
 static zend_function_entry leveldb_options_class_functions[] = {
-	/*
 	PHP_ME(LevelDbOptions, __construct, arginfo_leveldb_void, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	*/
 	{NULL, NULL, NULL}
 };
 /*	}}} */
@@ -159,9 +157,7 @@ zend_class_entry *php_leveldb_read_options_class_entry;
 #define PHP_LEVELDB_READ_OPTIONS_CLASS_NAME "LevelDbReadOptions"
 
 static zend_function_entry leveldb_read_options_class_functions[] = {
-	/*
 	PHP_ME(LevelDbReadOptions, __construct, arginfo_leveldb_void, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	*/
 	{NULL, NULL, NULL}
 };
 /*	}}} */
@@ -171,9 +167,7 @@ zend_class_entry *php_leveldb_write_options_class_entry;
 #define PHP_LEVELDB_WRITE_OPTIONS_CLASS_NAME "LevelDbWriteOptions"
 
 static zend_function_entry leveldb_write_options_class_functions[] = {
-	/*
 	PHP_ME(LevelDbWriteOptions, __construct, arginfo_leveldb_void, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
-	*/
 	{NULL, NULL, NULL}
 };
 /*	}}} */
@@ -227,10 +221,173 @@ zend_object_value leveldb_object_new(zend_class_entry *type TSRMLS_DC)
 {
 	return leveldb_object_new_ex(type, NULL TSRMLS_CC);
 }
+/*	}}} */
 
+/*	{{{ LevelDbOptions */
+zend_object_handlers leveldb_options_object_handlers;
+
+struct leveldb_options_object {
+	zend_object std;
+	Options options;
+};
+
+void leveldb_options_free_storage(void *object TSRMLS_DC)
+{
+	leveldb_options_object *obj = (leveldb_options_object *)object;
+	zend_objects_free_object_storage((zend_object *)object TSRMLS_CC);
+}
+
+zend_object_value leveldb_options_object_new_ex(zend_class_entry *type, leveldb_options_object **ptr TSRMLS_DC)
+{
+	zval *tmp;
+	zend_object_value retval;
+	leveldb_options_object *obj;
+
+	obj = (leveldb_options_object *)emalloc(sizeof(leveldb_options_object));
+	memset(obj, 0, sizeof(leveldb_options_object));
+
+	if (ptr) {
+		*ptr = obj;
+	}
+
+	zend_object_std_init(&obj->std, type TSRMLS_CC);
+#if ZEND_MODULE_API_NO >= 20100409
+	object_properties_init(&obj->std, type);
+#else
+	zend_hash_copy(obj->std.properties, &type->default_properties, (copy_ctor_func_t)zval_add_ref, (void *)&tmp, sizeof(zval *));
+#endif
+
+	retval.handle = zend_objects_store_put(obj, NULL, leveldb_options_free_storage, NULL TSRMLS_CC);
+	retval.handlers = &leveldb_options_object_handlers;
+	return retval;
+}
+
+zend_object_value leveldb_options_object_new(zend_class_entry *type TSRMLS_DC)
+{
+	return leveldb_options_object_new_ex(type, NULL TSRMLS_CC);
+}
+/*	}}} */
+
+/*	{{{ LevelDbReadOptions */
+zend_object_handlers leveldb_read_options_object_handlers;
+
+struct leveldb_read_options_object {
+	zend_object std;
+	ReadOptions options;
+};
+
+void leveldb_read_options_free_storage(void *object TSRMLS_DC)
+{
+	leveldb_read_options_object *obj = (leveldb_read_options_object *)object;
+	zend_objects_free_object_storage((zend_object *)object TSRMLS_CC);
+}
+
+zend_object_value leveldb_read_options_object_new_ex(zend_class_entry *type, leveldb_read_options_object **ptr TSRMLS_DC)
+{
+	zval *tmp;
+	zend_object_value retval;
+	leveldb_read_options_object *obj;
+
+	obj = (leveldb_read_options_object *)emalloc(sizeof(leveldb_read_options_object));
+	memset(obj, 0, sizeof(leveldb_read_options_object));
+
+	if (ptr) {
+		*ptr = obj;
+	}
+
+	zend_object_std_init(&obj->std, type TSRMLS_CC);
+#if ZEND_MODULE_API_NO >= 20100409
+	object_properties_init(&obj->std, type);
+#else
+	zend_hash_copy(obj->std.properties, &type->default_properties, (copy_ctor_func_t)zval_add_ref, (void *)&tmp, sizeof(zval *));
+#endif
+
+	retval.handle = zend_objects_store_put(obj, NULL, leveldb_read_options_free_storage, NULL TSRMLS_CC);
+	retval.handlers = &leveldb_read_options_object_handlers;
+	return retval;
+}
+
+zend_object_value leveldb_read_options_object_new(zend_class_entry *type TSRMLS_DC)
+{
+	return leveldb_read_options_object_new_ex(type, NULL TSRMLS_CC);
+}
+/*	}}} */
+
+/*	{{{ LevelDbWriteOptions */
+zend_object_handlers leveldb_write_options_object_handlers;
+
+struct leveldb_write_options_object {
+	zend_object std;
+	WriteOptions options;
+};
+
+void leveldb_write_options_free_storage(void *object TSRMLS_DC)
+{
+	leveldb_write_options_object *obj = (leveldb_write_options_object *)object;
+	zend_objects_free_object_storage((zend_object *)object TSRMLS_CC);
+}
+
+zend_object_value leveldb_write_options_object_new_ex(zend_class_entry *type, leveldb_write_options_object **ptr TSRMLS_DC)
+{
+	zval *tmp;
+	zend_object_value retval;
+	leveldb_write_options_object *obj;
+
+	obj = (leveldb_write_options_object *)emalloc(sizeof(leveldb_write_options_object));
+	memset(obj, 0, sizeof(leveldb_write_options_object));
+
+	if (ptr) {
+		*ptr = obj;
+	}
+
+	zend_object_std_init(&obj->std, type TSRMLS_CC);
+#if ZEND_MODULE_API_NO >= 20100409
+	object_properties_init(&obj->std, type);
+#else
+	zend_hash_copy(obj->std.properties, &type->default_properties, (copy_ctor_func_t)zval_add_ref, (void *)&tmp, sizeof(zval *));
+#endif
+
+	retval.handle = zend_objects_store_put(obj, NULL, leveldb_write_options_free_storage, NULL TSRMLS_CC);
+	retval.handlers = &leveldb_write_options_object_handlers;
+	return retval;
+}
+
+zend_object_value leveldb_write_options_object_new(zend_class_entry *type TSRMLS_DC)
+{
+	return leveldb_write_options_object_new_ex(type, NULL TSRMLS_CC);
+}
 /*	}}} */
 
 /* }}} */
+
+/* {{{ Methods */
+
+/*	{{{ static inline bool _create_object(zval *obj, zend_class_entry *ce) */
+static inline bool _create_object(zval **obj, zend_class_entry *ce)
+{
+	zval *ctor, unused;
+
+	MAKE_STD_ZVAL(*obj);
+	Z_TYPE_PP(obj) = IS_OBJECT;
+	object_init_ex(*obj, ce);
+
+	MAKE_STD_ZVAL(ctor);
+	array_init_size(ctor, 2);
+	Z_ADDREF_PP(obj);
+	add_next_index_zval(ctor, *obj);
+	add_next_index_string(ctor, "__construct", 1);
+	if (call_user_function(&ce->function_table, obj, ctor, &unused, 0, NULL TSRMLS_CC) == FAILURE) {
+		php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to construct %s", ce->name);
+		zval_add_ref(obj);
+		zval_ptr_dtor(obj);
+		return false;
+	}
+
+	zval_ptr_dtor(&ctor);
+	Z_DELREF_PP(obj);
+	return true;
+}
+/*	}}} */
 
 /*	{{{ proto LevelDb LevelDb::__construct(string $name [, LevelDbOptions $options [, LevelDbReadOptions $read_options [, LevelDbWriteOptions $write_options]]])
 	Construct a new LevelDb object. */
@@ -239,38 +396,47 @@ PHP_METHOD(LevelDb, __construct)
 	char *name;
 	int name_len;
 	std::string name_str;
-	zval *options = NULL, *read_options = NULL, *write_options = NULL;
+	zval *options_zv = NULL, *read_options_zv = NULL, *write_options_zv = NULL, *this_zv = getThis();
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|OOO",
 			&name, &name_len,
-			&options, php_leveldb_options_class_entry,
-			&read_options, php_leveldb_read_options_class_entry,
-			&write_options, php_leveldb_write_options_class_entry) == FAILURE) {
+			&options_zv, php_leveldb_options_class_entry,
+			&read_options_zv, php_leveldb_read_options_class_entry,
+			&write_options_zv, php_leveldb_write_options_class_entry) == FAILURE) {
 		RETURN_NULL();
 	}
 
-	/* todo: handle options obj from php */
-
-	/* todo: set default read and write options prop */
-
-	/* create DB object */
-	{
-		DB *obj_db;
-		Options options;
-		Status status;
-		
-		options.create_if_missing = true;
-		options.error_if_exists = false;
-		status = DB::Open(options, std::string(name, name_len), &obj_db);
-
-		if (status.ok()) {
-			leveldb_object *obj = (leveldb_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
-			obj->db = obj_db;
-		} else {
-			const char *error = status.ToString().c_str();
-			zend_throw_exception(spl_ce_InvalidArgumentException, (char *)error, 0 TSRMLS_CC);
-		}
+	/* db options */
+	if (!options_zv && !_create_object(&options_zv, php_leveldb_options_class_entry)) {
+		RETURN_NULL();
 	}
+	zend_update_property(php_leveldb_class_entry, this_zv, "options", strlen("options"), options_zv TSRMLS_CC);
+
+	/* open db */
+	DB *obj_db;
+	Status status;
+	leveldb_options_object *options_obj = (leveldb_options_object *)zend_object_store_get_object(options_zv TSRMLS_CC);
+	status = DB::Open(options_obj->options, std::string(name, name_len), &obj_db);
+
+	if (status.ok()) {
+		leveldb_object *obj = (leveldb_object *)zend_object_store_get_object(this_zv TSRMLS_CC);
+		obj->db = obj_db;
+	} else {
+		const char *error = status.ToString().c_str();
+		zend_throw_exception(spl_ce_InvalidArgumentException, (char *)error, 0 TSRMLS_CC);
+	}
+
+	/* read options */
+	if (!read_options_zv && !_create_object(&read_options_zv, php_leveldb_read_options_class_entry)) {
+		RETURN_NULL();
+	}
+	zend_update_property(php_leveldb_class_entry, this_zv, "readoptions", strlen("readoptions"), read_options_zv TSRMLS_CC);
+	
+	/* write options */
+	if (!write_options_zv && !_create_object(&write_options_zv, php_leveldb_write_options_class_entry)) {
+		RETURN_NULL();
+	}
+	zend_update_property(php_leveldb_class_entry, this_zv, "writeoptions", strlen("writeoptions"), write_options_zv TSRMLS_CC);
 }
 /*	}}} */
 
@@ -350,6 +516,49 @@ PHP_METHOD(LevelDb, delete)
 }
 /*	}}} */
 
+/*	{{{ proto LevelDbOptions LevelDbOptions::__construct()
+	Construct a new LevelDbOptions object. */
+PHP_METHOD(LevelDbOptions, __construct)
+{
+	if (zend_parse_parameters_none() == FAILURE) {
+		RETURN_NULL();
+	}
+
+	leveldb_options_object *options_obj = (leveldb_options_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+	options_obj->options = Options();
+	options_obj->options.create_if_missing = true;
+	options_obj->options.error_if_exists = false;
+}
+/*	}}} */
+
+/*	{{{ proto LevelDbReadOptions LevelDbReadOptions::__construct()
+	Construct a new LevelDbReadOptions object. */
+PHP_METHOD(LevelDbReadOptions, __construct)
+{
+	if (zend_parse_parameters_none() == FAILURE) {
+		RETURN_NULL();
+	}
+
+	leveldb_read_options_object *options_obj = (leveldb_read_options_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+	options_obj->options = ReadOptions();
+}
+/*	}}} */
+
+/*	{{{ proto LevelDbWriteOptions LevelDbWriteOptions::__construct()
+	Construct a new LevelDbWriteOptions object. */
+PHP_METHOD(LevelDbWriteOptions, __construct)
+{
+	if (zend_parse_parameters_none() == FAILURE) {
+		RETURN_NULL();
+	}
+
+	leveldb_write_options_object *options_obj = (leveldb_write_options_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+	options_obj->options = WriteOptions();
+}
+/*	}}} */
+
+/* }}} */
+
 /* {{{ leveldb_module_entry
  */
 zend_module_entry leveldb_module_entry = {
@@ -376,8 +585,9 @@ ZEND_GET_MODULE(leveldb)
  */
 PHP_MINIT_FUNCTION(leveldb)
 {
-	/* register LevelDb class */
 	zend_class_entry ce;
+
+	/* register LevelDb class */
 	INIT_CLASS_ENTRY(ce, PHP_LEVELDB_CLASS_NAME, leveldb_class_functions);
 	memcpy(&leveldb_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 	php_leveldb_class_entry = zend_register_internal_class(&ce TSRMLS_CC);
@@ -385,6 +595,24 @@ PHP_MINIT_FUNCTION(leveldb)
 	zend_declare_property_null(php_leveldb_class_entry, "options", strlen("options"), ZEND_ACC_PROTECTED TSRMLS_CC);
 	zend_declare_property_null(php_leveldb_class_entry, "readoptions", strlen("readoptions"), ZEND_ACC_PROTECTED TSRMLS_CC);
 	zend_declare_property_null(php_leveldb_class_entry, "writeoptions", strlen("writeoptions"), ZEND_ACC_PROTECTED TSRMLS_CC);
+
+	/* register LevelDbOptions class */
+	INIT_CLASS_ENTRY(ce, PHP_LEVELDB_OPTIONS_CLASS_NAME, leveldb_options_class_functions);
+	memcpy(&leveldb_options_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+	php_leveldb_options_class_entry = zend_register_internal_class(&ce TSRMLS_CC);
+	php_leveldb_options_class_entry->create_object = leveldb_options_object_new;
+
+	/* register LevelDbReadOptions class */
+	INIT_CLASS_ENTRY(ce, PHP_LEVELDB_READ_OPTIONS_CLASS_NAME, leveldb_read_options_class_functions);
+	memcpy(&leveldb_read_options_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+	php_leveldb_read_options_class_entry = zend_register_internal_class(&ce TSRMLS_CC);
+	php_leveldb_read_options_class_entry->create_object = leveldb_read_options_object_new;
+
+	/* register LevelDbWriteOptions class */
+	INIT_CLASS_ENTRY(ce, PHP_LEVELDB_WRITE_OPTIONS_CLASS_NAME, leveldb_write_options_class_functions);
+	memcpy(&leveldb_write_options_object_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+	php_leveldb_write_options_class_entry = zend_register_internal_class(&ce TSRMLS_CC);
+	php_leveldb_write_options_class_entry->create_object = leveldb_write_options_object_new;
 
 	return SUCCESS;
 }

@@ -45,6 +45,12 @@ PHP_METHOD(LevelDb, set);
 PHP_METHOD(LevelDb, get);
 PHP_METHOD(LevelDb, delete);
 
+PHP_METHOD(LevelDbOptions, __construct);
+
+PHP_METHOD(LevelDbReadOptions, __construct);
+
+PHP_METHOD(LevelDbWriteOptions, __construct);
+
 PHP_MINIT_FUNCTION(leveldb);
 PHP_MSHUTDOWN_FUNCTION(leveldb);
 PHP_RINIT_FUNCTION(leveldb);
