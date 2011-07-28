@@ -41,6 +41,9 @@ extern zend_module_entry leveldb_module_entry;
 #endif
 
 PHP_METHOD(LevelDb, __construct);
+PHP_METHOD(LevelDb, set);
+PHP_METHOD(LevelDb, get);
+PHP_METHOD(LevelDb, delete);
 
 PHP_MINIT_FUNCTION(leveldb);
 PHP_MSHUTDOWN_FUNCTION(leveldb);

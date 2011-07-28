@@ -98,12 +98,12 @@ ZEND_END_ARG_INFO()
 
 static zend_function_entry leveldb_class_functions[] = {
 	PHP_ME(LevelDb, __construct, arginfo_leveldb_construct, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR)
+	PHP_ME(LevelDb, set, arginfo_leveldb_set, ZEND_ACC_PUBLIC)
+	PHP_ME(LevelDb, get, arginfo_leveldb_get, ZEND_ACC_PUBLIC)
+	PHP_ME(LevelDb, delete, arginfo_leveldb_delete, ZEND_ACC_PUBLIC)
 	/*
 	PHP_ME(LevelDb, __destruct, arginfo_leveldb_void, ZEND_ACC_PUBLIC | ZEND_ACC_DTOR)
-	PHP_ME(LevelDb, set, arginfo_leveldb_put, ZEND_ACC_PUBLIC)
-	PHP_ME(LevelDb, delete, arginfo_leveldb_delete, ZEND_ACC_PUBLIC)
 	PHP_ME(LevelDb, write, arginfo_leveldb_write, ZEND_ACC_PUBLIC)
-	PHP_ME(LevelDb, get, arginfo_leveldb_get, ZEND_ACC_PUBLIC)
 	PHP_ME(LevelDb, getIterator, arginfo_leveldb_get_iterator, ZEND_ACC_PUBLIC)
 	PHP_ME(LevelDb, getSnapshot, arginfo_leveldb_void, ZEND_ACC_PUBLIC)
 	PHP_ME(LevelDb, releaseSnapshot, arginfo_leveldb_release_snapshot, ZEND_ACC_PUBLIC)
@@ -257,7 +257,11 @@ PHP_METHOD(LevelDb, __construct)
 	{
 		DB *obj_db;
 		Options options;
-		Status status = DB::Open(options, std::string(name, name_len), &obj_db);
+		Status status;
+		
+		options.create_if_missing = true;
+		options.error_if_exists = false;
+		status = DB::Open(options, std::string(name, name_len), &obj_db);
 
 		if (status.ok()) {
 			leveldb_object *obj = (leveldb_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
@@ -266,6 +270,82 @@ PHP_METHOD(LevelDb, __construct)
 			const char *error = status.ToString().c_str();
 			zend_throw_exception(spl_ce_InvalidArgumentException, (char *)error, 0 TSRMLS_CC);
 		}
+	}
+}
+/*	}}} */
+
+/*	{{{ proto bool LevelDb::set(string $key, string $value [, LevelDbWriteOptions $write_options])
+	Sets the value for the given key. */
+PHP_METHOD(LevelDb, set)
+{
+	char *key, *value;
+	int key_len, value_len;
+	zval *write_options = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss|O",
+			&key, &key_len,
+			&value, &value_len,
+			&write_options, php_leveldb_write_options_class_entry) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	{
+		WriteOptions options;
+		leveldb_object *obj = (leveldb_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+		Status status = obj->db->Put(options, key, value);
+		RETVAL_BOOL(status.ok());
+	}
+}
+/*	}}} */
+
+/*	{{{ proto bool LevelDb::get(string $key, [, LevelDbReadOptions $read_options])
+	Returns the value for a given key. */
+PHP_METHOD(LevelDb, get)
+{
+	char *key;
+	int key_len;
+	zval *read_options = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|O",
+			&key, &key_len,
+			&read_options, php_leveldb_read_options_class_entry) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	{
+		std::string value;
+		ReadOptions options;
+		leveldb_object *obj = (leveldb_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+		Status status = obj->db->Get(options, key, &value);
+		
+		if (status.ok()) {
+			RETURN_STRINGL(value.c_str(), value.length(), 1);
+		}
+
+		RETURN_FALSE;
+	}
+}
+/*	}}} */
+
+/*	{{{ proto bool LevelDb::delete(string $key, [, LevelDbWriteOptions $write_options])
+	Deletes given key. */
+PHP_METHOD(LevelDb, delete)
+{
+	char *key;
+	int key_len;
+	zval *write_options = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|O",
+			&key, &key_len,
+			&write_options, php_leveldb_write_options_class_entry) == FAILURE) {
+		RETURN_FALSE;
+	}
+
+	{
+		WriteOptions options;
+		leveldb_object *obj = (leveldb_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+		Status status = obj->db->Delete(options, key);
+		RETURN_BOOL(status.ok());
 	}
 }
 /*	}}} */
